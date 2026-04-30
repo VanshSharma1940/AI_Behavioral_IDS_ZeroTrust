@@ -1,0 +1,89 @@
+# AI-Based Behavioral IDS - Model Configuration
+# All hyperparameters optimized for UNSW-NB15 and CICIDS2017 datasets
+
+# Data preprocessing configuration
+data:
+  data_dir: "datasets"
+  unsw_train_path: "datasets/UNSW_NB15_training.csv"
+  unsw_test_path: "datasets/UNSW_NB15_testing.csv"
+  cicids_dir: "datasets/CICIDS2017"
+  output_dir: "outputs"
+  model_dir: "outputs/models"
+  log_dir: "outputs/logs"
+  plot_dir: "outputs/plots"
+  test_size: 0.2
+  random_state: 42
+  sequence_length: 100
+  normalization_method: "minmax"
+  use_pca: true
+  n_components: 10
+  use_smote_enn: true
+  smote_sampling_strategy: "auto"
+  target_column: "label"
+  attack_category_column: "attack_cat"
+
+# Model architecture configuration
+model:
+  # LSTM Autoencoder parameters
+  lstm_units: [64, 32]
+  latent_dim: 16
+  lstm_dropout: 0.2
+  lstm_learning_rate: 0.001
+  lstm_batch_size: 64
+  lstm_epochs: 50
+  lstm_sequence_length: 100
+  lstm_threshold_method: "percentile"
+  lstm_threshold_percentile: 95
+  lstm_threshold_value: 0.07
+
+  # Isolation Forest parameters
+  if_n_estimators: 200
+  if_max_samples: 256
+  if_contamination: 0.1
+  if_max_features: 1.0
+  if_bootstrap: false
+  if_n_jobs: -1
+
+  # DNN Classifier parameters
+  dnn_hidden_layers: [128, 64, 32]
+  dnn_dropout_rates: [0.3, 0.3, 0.2]
+  dnn_learning_rate: 0.001
+  dnn_batch_size: 64
+  dnn_epochs: 50
+  dnn_activation: "relu"
+  dnn_output_activation: "softmax"
+
+  # Ensemble weights (optimized via grid search)
+  lstm_weight: 0.4
+  if_weight: 0.3
+  dnn_weight: 0.3
+  ensemble_threshold: 0.5
+
+  # Training configuration
+  early_stopping_patience: 10
+  early_stopping_restore_best: true
+  model_checkpoint_dir: "outputs/models/checkpoints"
+  alert_confidence_threshold: 0.7
+
+# API and SIEM integration configuration
+api:
+  host: "0.0.0.0"
+  port: 8080
+  debug: false
+  alert_format: "json"
+  max_alerts_per_minute: 100
+  alert_cooldown_seconds: 60
+  api_auth_enabled: true
+  api_token: "ids-api-token-2026"
+
+# Real-time traffic analysis configuration
+realtime:
+  capture_interface: null
+  capture_filter: "ip"
+  capture_timeout: 60
+  window_size: 100
+  flow_timeout: 60.0
+  detection_interval: 5.0
+  batch_size: 64
+  max_flows_tracked: 10000
+  cleanup_interval: 30.0
